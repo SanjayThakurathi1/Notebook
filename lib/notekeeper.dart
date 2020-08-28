@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
 import 'package:notebook/statemngmnt.dart';
 import 'package:provider/provider.dart';
@@ -43,15 +42,10 @@ class _NotekeeperState extends State<Notekeeper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Provider.of<Changes>(context).mode ? Colors.grey[800] : Colors.white,
+      backgroundColor: Provider.of<Changes>(context).mode ? Colors.grey[800] : Colors.white,
       appBar: AppBar(
-        brightness: Provider.of<Changes>(context).mode
-            ? Brightness.dark
-            : Brightness.light,
-        backgroundColor: Provider.of<Changes>(context, listen: false).mode
-            ? Colors.grey[800]
-            : Colors.amber,
+        brightness: Provider.of<Changes>(context).mode ? Brightness.dark : Brightness.light,
+        backgroundColor: Provider.of<Changes>(context, listen: false).mode ? Colors.grey[800] : Colors.amber,
         title: Text(widget.appbartitle),
       ),
       body: Center(
@@ -63,12 +57,7 @@ class _NotekeeperState extends State<Notekeeper> {
                 onChanged: (value) {
                   title = value;
                 },
-                decoration: InputDecoration(
-                    fillColor: Colors.amber,
-                    hoverColor: Colors.amber,
-                    hintText: "Title",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.horizontal())),
+                decoration: InputDecoration(fillColor: Colors.amber, hoverColor: Colors.amber, hintText: "Title", border: OutlineInputBorder(borderRadius: BorderRadius.horizontal())),
               ),
               SizedBox(
                 height: 20,
@@ -86,8 +75,7 @@ class _NotekeeperState extends State<Notekeeper> {
                       labelText: "Description",
                       contentPadding: EdgeInsets.fromLTRB(80, 80, 80, 80),
                       //hintText: "Description",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.horizontal())),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.horizontal())),
                 ),
               ),
               SizedBox(
@@ -101,23 +89,14 @@ class _NotekeeperState extends State<Notekeeper> {
                     width: 110,
                     child: Builder(
                       builder: (context) => RaisedButton(
-                          colorBrightness:
-                              Provider.of<Changes>(context, listen: false).mode
-                                  ? Brightness.dark
-                                  : Brightness.light,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          color:
-                              Provider.of<Changes>(context, listen: false).mode
-                                  ? Colors.grey[800]
-                                  : Colors.amber,
+                          colorBrightness: Provider.of<Changes>(context, listen: false).mode ? Brightness.dark : Brightness.light,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          color: Provider.of<Changes>(context, listen: false).mode ? Colors.grey[800] : Colors.amber,
                           child: Text("Add"),
                           onPressed: () {
                             insert();
-                            Scaffold.of(context).showSnackBar(SnackBar(
-                                duration: Duration(seconds: 2),
-                                content: Text("Note Added Sucessfully")));
-                            Navigator.pop(context, true);
+                            Scaffold.of(context).showSnackBar(SnackBar(duration: Duration(seconds: 2), content: Text("Note Added Sucessfully")));
+                            Navigator.of(context).pop(true);
                           }),
                     ),
                   ),
