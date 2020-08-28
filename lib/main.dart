@@ -77,26 +77,19 @@ class _NotebookhomeState extends State<Notebookhome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Provider.of<Changes>(context).mode ? Colors.grey[800] : Colors.white,
+      backgroundColor: Provider.of<Changes>(context).mode ? Colors.grey[800] : Colors.white,
       appBar: AppBar(
         actions: [
           CupertinoSwitch(
-            activeColor: Provider.of<Changes>(context, listen: false).mode
-                ? Colors.grey
-                : Colors.lightBlue,
+            activeColor: Provider.of<Changes>(context, listen: false).mode ? Colors.grey : Colors.lightBlue,
             value: Provider.of<Changes>(context).mode,
             onChanged: (value) {
               Provider.of<Changes>(context, listen: false).darkmode(value);
             },
           )
         ],
-        brightness: Provider.of<Changes>(context, listen: false).mode
-            ? Brightness.dark
-            : Brightness.light,
-        backgroundColor: Provider.of<Changes>(context, listen: false).mode
-            ? Colors.grey[800]
-            : Colors.amber,
+        brightness: Provider.of<Changes>(context, listen: false).mode ? Brightness.dark : Brightness.light,
+        backgroundColor: Provider.of<Changes>(context, listen: false).mode ? Colors.grey[800] : Colors.amber,
         title: Text("Notes"),
         centerTitle: true,
       ),
@@ -110,16 +103,15 @@ class _NotebookhomeState extends State<Notebookhome> {
                         background: Container(
                           color: Colors.red,
                         ),
-                        confirmDismiss: (DismissDirection direction) {
+                        confirmDismiss: (DismissDirection direction) async {
                           String action;
                           if (direction == DismissDirection.endToStart) {
                             // This is a delete action
                             action = "delete";
-                            showCupertinoDialog<bool>(
+                            return await showCupertinoDialog<bool>(
                               context: context,
                               builder: (context) => CupertinoAlertDialog(
-                                content:
-                                    Text("Are you sure you want to $action?"),
+                                content: Text("Are you sure you want to $action?"),
                                 actions: <Widget>[
                                   CupertinoDialogAction(
                                     child: Text("Ok"),
@@ -147,8 +139,8 @@ class _NotebookhomeState extends State<Notebookhome> {
                           } else {
                             // This is an archive action
                             action = "archive";
+                            return false;
                           }
-
                           // In case the user dismisses
                         },
                         onDismissed: (direction) {
@@ -164,19 +156,14 @@ class _NotebookhomeState extends State<Notebookhome> {
                               )));
                         },
                         child: Card(
-                          color:
-                              Provider.of<Changes>(context, listen: false).mode
-                                  ? Colors.grey[800]
-                                  : Colors.white,
+                          color: Provider.of<Changes>(context, listen: false).mode ? Colors.grey[800] : Colors.white,
                           key: ValueKey(index),
                           child: ListTile(
                             // key: ObjectKey(index),
                             title: Text("${notelist[index].title}"),
                             trailing: Text(
                               notelist[index].date,
-                              style: TextStyle(
-                                  color: Colors.lightBlue,
-                                  fontWeight: FontWeight.bold),
+                              style: TextStyle(color: Colors.lightBlue, fontWeight: FontWeight.bold),
                             ),
                             subtitle: Container(
                               child: Text("${notelist[index].desc}"),
@@ -195,7 +182,7 @@ class _NotebookhomeState extends State<Notebookhome> {
           itemBuilder: (context, index) => Card(
             shadowColor: Colors.amber,
             child: Dismissible(
-              
+
               background: Container(
                 color: Colors.red,
               ),
@@ -261,7 +248,7 @@ class _NotebookhomeState extends State<Notebookhome> {
                 ),
                 /*trailing: GestureDetector(
                   onTap: () {
-                   
+
                     updatedata();
                   },
                   child: Icon(
@@ -280,9 +267,7 @@ class _NotebookhomeState extends State<Notebookhome> {
           ),
       floatingActionButton: FloatingActionButton(
           tooltip: "Add Note",
-          backgroundColor: Provider.of<Changes>(context).mode
-              ? Colors.grey[800]
-              : Colors.amber,
+          backgroundColor: Provider.of<Changes>(context).mode ? Colors.grey[800] : Colors.amber,
           child: Icon(Icons.add),
           onPressed: () {
             navigatetodetail('Add Note');
@@ -293,6 +278,7 @@ class _NotebookhomeState extends State<Notebookhome> {
 
   List<Note> notelist = List();
   Future<List<Note>> queryall() async {
+    notelist = List<Note>(); //clear the list before adding, else replicates will be there
     final db = DatabaseHelper.instance;
     final List<Map<String, dynamic>> allqueries = await db.queryall();
 
