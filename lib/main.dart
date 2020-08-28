@@ -51,11 +51,7 @@ class _NotebookhomeState extends State<Notebookhome> {
                   appbartitle: title,
                 )));
 
-    if (res == true) {
-      setState(() {
-        this.notelist = notelist;
-      });
-    }
+    queryall();
   }
 
   void updatedata() {
@@ -65,10 +61,12 @@ class _NotebookhomeState extends State<Notebookhome> {
   }
 
   void onreorder(int oldindex, int newindex) {
-    print('$oldindex, $newindex');
+    if (newindex > oldindex) {
+      newindex = newindex - 1;
+    }
     setState(() {
       final item = notelist.removeAt(oldindex);
-      notelist.insert(newindex - 1, item);
+      notelist.insert(newindex, item);
     });
   }
 
@@ -97,88 +95,85 @@ class _NotebookhomeState extends State<Notebookhome> {
         title: Text("Notes"),
         centerTitle: true,
       ),
-      body: RefreshIndicator(
-        child: ReorderableListView(
-            children: List.generate(
-                notelist.length,
-                (index) => Dismissible(
-                      key: UniqueKey(),
-                      background: Container(
-                        color: Colors.red,
-                      ),
-                      confirmDismiss: (DismissDirection direction) async {
-                        String action;
-                        if (direction == DismissDirection.endToStart) {
-                          // This is a delete action
-                          action = "delete";
-                          showCupertinoDialog<bool>(
-                            context: context,
-                            builder: (context) => CupertinoAlertDialog(
-                              content: Text("Are you sure you want to $action?"),
-                              actions: <Widget>[
-                                CupertinoDialogAction(
-                                  child: Text("Ok"),
-                                  onPressed: () {
-                                    setState(() {
-                                      final db = DatabaseHelper.instance;
-                                      db.deletedata(notelist[index].id);
-                                      notelist.removeAt(index);
-                                    });
+      body: ReorderableListView(
+          children: List.generate(
+              notelist.length,
+              (index) => Dismissible(
+                    key: UniqueKey(),
+                    background: Container(
+                      color: Colors.red,
+                    ),
+                    confirmDismiss: (DismissDirection direction) async {
+                      String action;
+                      if (direction == DismissDirection.endToStart) {
+                        // This is a delete action
+                        action = "delete";
+                        showCupertinoDialog<bool>(
+                          context: context,
+                          builder: (context) => CupertinoAlertDialog(
+                            content: Text("Are you sure you want to $action?"),
+                            actions: <Widget>[
+                              CupertinoDialogAction(
+                                child: Text("Ok"),
+                                onPressed: () {
+                                  setState(() {
+                                    final db = DatabaseHelper.instance;
+                                    db.deletedata(notelist[index].id);
+                                    notelist.removeAt(index);
+                                  });
 
-                                    Navigator.of(context).pop(true);
-                                  },
-                                ),
-                                CupertinoDialogAction(
-                                  child: Text('Cancel'),
-                                  onPressed: () {
-                                    // Dismiss the dialog but don't
-                                    // dismiss the swiped item
-                                    return Navigator.of(context).pop(false);
-                                  },
-                                )
-                              ],
-                            ),
-                          );
-                        } else {
-                          // This is an archive action
-                          action = "archive";
-                        }
-                        // In case the user dismisses
-                      },
-                      direction: DismissDirection.startToEnd,
-                      onDismissed: (direction) {
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                            duration: Duration(seconds: 2),
-                            content: Text(
-                              "Note Deleted Sucessfully",
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                                  Navigator.of(context).pop(true);
+                                },
                               ),
-                            )));
-                      },
-                      child: Card(
-                        color: Provider.of<Changes>(context, listen: false).mode ? Colors.grey[800] : Colors.white,
-                        key: ValueKey(index),
-                        child: ListTile(
-                          // key: ObjectKey(index),
-                          title: Text("${notelist[index].title}"),
-                          trailing: Text(
-                            notelist[index].date,
-                            style: TextStyle(color: Colors.lightBlue, fontWeight: FontWeight.bold),
+                              CupertinoDialogAction(
+                                child: Text('Cancel'),
+                                onPressed: () {
+                                  // Dismiss the dialog but don't
+                                  // dismiss the swiped item
+                                  return Navigator.of(context).pop(false);
+                                },
+                              )
+                            ],
                           ),
-                          subtitle: Container(
-                            child: Text("${notelist[index].desc}"),
-                          ),
+                        );
+                      } else {
+                        // This is an archive action
+                        action = "archive";
+                      }
+                      // In case the user dismisses
+                    },
+                    direction: DismissDirection.startToEnd,
+                    onDismissed: (direction) {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                          duration: Duration(seconds: 2),
+                          content: Text(
+                            "Note Deleted Sucessfully",
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          )));
+                    },
+                    child: Card(
+                      color: Provider.of<Changes>(context, listen: false).mode ? Colors.grey[800] : Colors.white,
+                      key: ValueKey(index),
+                      child: ListTile(
+                        // key: ObjectKey(index),
+                        title: Text("${notelist[index].title}"),
+                        trailing: Text(
+                          notelist[index].date,
+                          style: TextStyle(color: Colors.lightBlue, fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Container(
+                          child: Text("${notelist[index].desc}"),
                         ),
                       ),
-                    )),
-            onReorder: (int oldindex, int newindex) {
-              onreorder(oldindex, newindex);
-            }),
-        onRefresh: () async => queryall(),
-      ),
+                    ),
+                  )),
+          onReorder: (int oldindex, int newindex) {
+            onreorder(oldindex, newindex);
+          }),
       floatingActionButton: FloatingActionButton(
           tooltip: "Add Note",
           backgroundColor: Provider.of<Changes>(context).mode ? Colors.grey[800] : Colors.amber,
@@ -200,7 +195,7 @@ class _NotebookhomeState extends State<Notebookhome> {
 
     for (int i = 0; i < count; i++) {
       notelist.add(Note.extractfrommap(allqueries[i]));
-//      print(notelist[i].title);
+      print(notelist[i].title);
     }
     setState(() {});
   }
