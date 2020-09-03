@@ -10,6 +10,8 @@ _A new Flutter project with darkmode
 Use of FutureBuilder,Listview.builder,Listtile,card,datepicker
 Use Dissimissible widget for delete operation
 
+# Use Provider for StateManagement
+
 
 ---
 
