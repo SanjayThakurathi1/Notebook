@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:notebook/statemngmnt.dart';
@@ -23,15 +24,16 @@ class _NotekeeperState extends State<Notekeeper> {
   }
 
   final db = DatabaseHelper.instance;
-  String title, description;
-  //String date = DateFormat.yMEd().add_jms().format(DateTime.now());
-  String date = DateFormat.yMMMd().format(DateTime.now());
+  String title, description, date;
+  // String date = DateFormat.yMEd().add_jms().format(DateTime.now());
+
   final dbb = DatabaseHelper.instance;
 
   Future<int> insert() async {
     Map<String, dynamic> row = {
       DatabaseHelper.coloumntitle: title,
-      DatabaseHelper.coloumndate: date,
+      DatabaseHelper.coloumndate:
+          date == null ? DateFormat.yMEd().format(DateTime.now()) : date,
       DatabaseHelper.coloumndescription: description,
     };
     final id = await db.insert(row);
@@ -39,14 +41,94 @@ class _NotekeeperState extends State<Notekeeper> {
     return id;
   }
 
+  Future<DateFormat> _datepicker() {
+    showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2020),
+            lastDate: DateTime(2021))
+        .then((pickeddate) {
+      if (pickeddate == null) {
+        date = DateFormat.yMEd().format(DateTime.now());
+      } else
+        date = DateFormat.yMEd().format(pickeddate);
+    });
+  }
+
+  Future<DateFormat> datepicker() {
+    Container(
+      child: CupertinoDatePicker(
+          mode: CupertinoDatePickerMode.date,
+          //backgroundColor: Colors,
+          minimumDate: DateTime(2020),
+          maximumDate: DateTime(2021),
+          initialDateTime: DateTime.now(),
+          onDateTimeChanged: (DateTime value) {
+            print(value);
+            if (value == null) {
+              date = DateFormat.yMEd().format(DateTime.now());
+            } else {
+              date = DateFormat.yMEd().format(value);
+              print(date);
+            }
+          }),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Provider.of<Changes>(context).mode ? Colors.grey[800] : Colors.white,
+      backgroundColor:
+          Provider.of<Changes>(context).mode ? Colors.grey[800] : Colors.white,
       appBar: AppBar(
-        brightness: Provider.of<Changes>(context).mode ? Brightness.dark : Brightness.light,
-        backgroundColor: Provider.of<Changes>(context, listen: false).mode ? Colors.grey[800] : Colors.amber,
-        title: Text(widget.appbartitle),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back_ios),
+          color: Provider.of<Changes>(context, listen: false).mode
+              ? Colors.white
+              : Colors.black,
+        ),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        brightness: Provider.of<Changes>(context).mode
+            ? Brightness.dark
+            : Brightness.light,
+        backgroundColor: Provider.of<Changes>(context, listen: false).mode
+            ? Colors.grey[800]
+            : Colors.amber,
+        title: Text(
+          widget.appbartitle,
+          style: TextStyle(
+            color: Provider.of<Changes>(context, listen: false).mode
+                ? Colors.white
+                : Colors.black,
+          ),
+        ),
+        actions: [
+          Tooltip(
+            textStyle: TextStyle(
+              color: Provider.of<Changes>(context, listen: false).mode
+                  ? Colors.black
+                  : Colors.lightBlue,
+            ),
+            message: "Pick the date",
+            child: IconButton(
+                onPressed: () =>
+                    //Provider.of<Changes>(context, listen: false).mode
+                    //  ? _datepicker():
+                    datepicker(),
+                icon: Icon(
+                  Icons.date_range,
+                  color: Provider.of<Changes>(context, listen: false).mode
+                      ? Colors.white
+                      : Colors.black,
+                  size: 40,
+                )),
+          ),
+          SizedBox(
+            width: 15,
+          )
+        ],
       ),
       body: Center(
         child: Padding(
@@ -57,7 +139,17 @@ class _NotekeeperState extends State<Notekeeper> {
                 onChanged: (value) {
                   title = value;
                 },
-                decoration: InputDecoration(fillColor: Colors.amber, hoverColor: Colors.amber, hintText: "Title", border: OutlineInputBorder(borderRadius: BorderRadius.horizontal())),
+                decoration: InputDecoration(
+                    fillColor: Colors.amber,
+                    hoverColor: Colors.amber,
+                    hintText: "Title",
+                    hintStyle: TextStyle(
+                        color: Provider.of<Changes>(context, listen: false).mode
+                            ? Colors.white
+                            : Colors.black,
+                        fontWeight: FontWeight.bold),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.horizontal())),
               ),
               SizedBox(
                 height: 20,
@@ -72,10 +164,17 @@ class _NotekeeperState extends State<Notekeeper> {
                     description = value;
                   },
                   decoration: InputDecoration(
+                      labelStyle: TextStyle(
+                          color:
+                              Provider.of<Changes>(context, listen: false).mode
+                                  ? Colors.white
+                                  : Colors.black,
+                          fontWeight: FontWeight.bold),
                       labelText: "Description",
                       contentPadding: EdgeInsets.fromLTRB(80, 80, 80, 80),
                       //hintText: "Description",
-                      border: OutlineInputBorder(borderRadius: BorderRadius.horizontal())),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.horizontal())),
                 ),
               ),
               SizedBox(
@@ -88,22 +187,34 @@ class _NotekeeperState extends State<Notekeeper> {
                     height: 45,
                     width: 110,
                     child: Builder(
-                      builder: (context) => RaisedButton(
-                          colorBrightness: Provider.of<Changes>(context, listen: false).mode ? Brightness.dark : Brightness.light,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          color: Provider.of<Changes>(context, listen: false).mode ? Colors.grey[800] : Colors.amber,
+                      builder: (context) =>
+                       RaisedButton()
+                     /*  CupertinoButton(
+                         
+                          colorBrightness:
+                              Provider.of<Changes>(context, listen: false).mode
+                                  ? Brightness.dark
+                                  : Brightness.light,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          color:
+                              Provider.of<Changes>(context, listen: false).mode
+                                  ? Colors.grey[800]
+                                  : Colors.amber,
                           child: Text("Add"),
                           onPressed: () {
                             insert();
-                            Scaffold.of(context).showSnackBar(SnackBar(duration: Duration(seconds: 2), content: Text("Note Added Sucessfully")));
-                            Navigator.of(context).pop(true);
-                          }),
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                                duration: Duration(seconds: 2),
+                                content: Text("Note Added Sucessfully")));
+                            Navigator.pop(context, true);
+
+                            setState(() {});
+                          }),*/
                     ),
                   ),
+
                   SizedBox(
-                    width: 25,
-                  ),
-                  /*SizedBox(
                     height: 45,
                     width: 90,
                     child: RaisedButton(
