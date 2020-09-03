@@ -7,7 +7,7 @@ _A new Flutter project with darkmode
 ---
 
  **Use sqflite for database,
-Use of FutureBuilder
+Use of FutureBuilder,Listview.builder,Listtile,card
 Use Dissimissible widget for delete operation
 
 ---
