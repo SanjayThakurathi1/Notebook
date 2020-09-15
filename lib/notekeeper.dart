@@ -23,6 +23,13 @@ class _NotekeeperState extends State<Notekeeper> {
     });
   }
 
+  final _descfocusnode = FocusNode();
+  @override
+  void dispose() {
+    _descfocusnode.dispose();
+    super.dispose();
+  }
+
   final db = DatabaseHelper.instance;
   String title, description, date;
   // String date = DateFormat.yMEd().add_jms().format(DateTime.now());
@@ -55,7 +62,7 @@ class _NotekeeperState extends State<Notekeeper> {
     });
   }
 
-  Future<DateFormat> datepicker() {
+  /*Future<DateFormat> datepicker() {
     Container(
       child: CupertinoDatePicker(
           mode: CupertinoDatePickerMode.date,
@@ -74,6 +81,7 @@ class _NotekeeperState extends State<Notekeeper> {
           }),
     );
   }
+  */
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +124,7 @@ class _NotekeeperState extends State<Notekeeper> {
                 onPressed: () =>
                     //Provider.of<Changes>(context, listen: false).mode
                     //  ? _datepicker():
-                    datepicker(),
+                    _datepicker(),
                 icon: Icon(
                   Icons.date_range,
                   color: Provider.of<Changes>(context, listen: false).mode
@@ -130,107 +138,114 @@ class _NotekeeperState extends State<Notekeeper> {
           )
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              TextField(
-                onChanged: (value) {
-                  title = value;
-                },
-                decoration: InputDecoration(
-                    fillColor: Colors.amber,
-                    hoverColor: Colors.amber,
-                    hintText: "Title",
-                    hintStyle: TextStyle(
-                        color: Provider.of<Changes>(context, listen: false).mode
-                            ? Colors.white
-                            : Colors.black,
-                        fontWeight: FontWeight.bold),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.horizontal())),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Container(
-                height: 200,
-                child: TextField(
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  expands: true,
+      body: Form(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                TextFormField(
+                  onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(
+                    _descfocusnode,
+                  ),
+                  textInputAction: TextInputAction.next,
                   onChanged: (value) {
-                    description = value;
+                    title = value;
                   },
                   decoration: InputDecoration(
-                      labelStyle: TextStyle(
+                      fillColor: Colors.amber,
+                      hoverColor: Colors.amber,
+                      hintText: "Title",
+                      hintStyle: TextStyle(
                           color:
                               Provider.of<Changes>(context, listen: false).mode
                                   ? Colors.white
                                   : Colors.black,
                           fontWeight: FontWeight.bold),
-                      labelText: "Description",
-                      contentPadding: EdgeInsets.fromLTRB(80, 80, 80, 80),
-                      //hintText: "Description",
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.horizontal())),
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 45,
-                    width: 110,
-                    child: Builder(
-                      builder: (context) =>
-                       RaisedButton()
-                     /*  CupertinoButton(
-                         
-                          colorBrightness:
-                              Provider.of<Changes>(context, listen: false).mode
-                                  ? Brightness.dark
-                                  : Brightness.light,
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  height: 200,
+                  child: TextFormField(
+                    textInputAction: TextInputAction.done,
+                    focusNode: _descfocusnode,
+                    maxLines: 5,
+                    keyboardType: TextInputType.multiline,
+                    // expands: true,
+                    onChanged: (value) {
+                      description = value;
+                    },
+                    decoration: InputDecoration(
+                        labelStyle: TextStyle(
+                            color: Provider.of<Changes>(context, listen: false)
+                                    .mode
+                                ? Colors.white
+                                : Colors.black,
+                            fontWeight: FontWeight.bold),
+                        labelText: "Description",
+                        contentPadding: EdgeInsets.fromLTRB(80, 80, 80, 80),
+                        //hintText: "Description",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.horizontal())),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 45,
+                      width: 110,
+                      child: Builder(
+                        builder: (context) => RaisedButton(
+                            colorBrightness:
+                                Provider.of<Changes>(context, listen: false)
+                                        .mode
+                                    ? Brightness.dark
+                                    : Brightness.light,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            color: Provider.of<Changes>(context, listen: false)
+                                    .mode
+                                ? Colors.grey[800]
+                                : Colors.amber,
+                            child: Text("Add"),
+                            onPressed: () {
+                              insert();
+                              Scaffold.of(context).showSnackBar(SnackBar(
+                                  duration: Duration(seconds: 2),
+                                  content: Text("Note Added Sucessfully")));
+                              Navigator.pop(context, true);
+
+                              setState(() {});
+                            }),
+                      ),
+                    ),
+                    /*SizedBox(
+                      height: 45,
+                      width: 90,
+                      child: RaisedButton(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          color:
-                              Provider.of<Changes>(context, listen: false).mode
-                                  ? Colors.grey[800]
-                                  : Colors.amber,
-                          child: Text("Add"),
-                          onPressed: () {
-                            insert();
-                            Scaffold.of(context).showSnackBar(SnackBar(
-                                duration: Duration(seconds: 2),
-                                content: Text("Note Added Sucessfully")));
-                            Navigator.pop(context, true);
-
-                            setState(() {});
-                          }),*/
-                    ),
-                  ),
-
-                  SizedBox(
-                    height: 45,
-                    width: 90,
-                    child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        color: Colors.amber,
-                        child: Text("Delete"),
-                        onPressed: () async {
-                          queryall();
-                          // db.insertdata(note);
-                          Navigator.pop(context);
-                        }),
-                  )*/
-                ],
-              )
-            ],
+                          color: Colors.amber,
+                          child: Text("Delete"),
+                          onPressed: () async {
+                            queryall();
+                            // db.insertdata(note);
+                            Navigator.pop(context);
+                          }),
+                    )
+                    */
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),

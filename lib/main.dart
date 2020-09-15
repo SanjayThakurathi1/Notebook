@@ -16,14 +16,7 @@ void main() => runApp(ChangeNotifierProvider(
     },
     child: MyApp()));
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  //bool mode = false;
-  @override
+class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -133,42 +126,46 @@ class _NotebookhomeState extends State<Notebookhome> {
                       key: UniqueKey(),
                       background: Container(
                         color: Colors.red,
+                        child: Icon(
+                          Icons.delete,
+                          size: 43,
+                          color: Colors.black,
+                        ),
                       ),
-                      confirmDismiss: (DismissDirection direction) {
+                      direction: DismissDirection.endToStart,
+                      confirmDismiss: (direction) {
                         String action;
-                        if (direction == DismissDirection.endToStart) {
-                          // This is a delete action
-                          action = "delete";
-                          return showCupertinoDialog<bool>(
-                            context: context,
-                            builder: (context) => CupertinoAlertDialog(
-                              content:
-                                  Text("Are you sure you want to $action?"),
-                              actions: <Widget>[
-                                CupertinoDialogAction(
-                                  child: Text("Ok"),
-                                  onPressed: () {
-                                    setState(() {
-                                      final db = DatabaseHelper.instance;
-                                      db.deletedata(notelist[index].id);
-                                      notelist.removeAt(index);
-                                    });
 
-                                    Navigator.of(context).pop(true);
-                                  },
-                                ),
-                                CupertinoDialogAction(
-                                  child: Text('Cancel'),
-                                  onPressed: () {
-                                    // Dismiss the dialog but don't
-                                    // dismiss the swiped item
-                                    return Navigator.of(context).pop(false);
-                                  },
-                                )
-                              ],
-                            ),
-                          );
-                        }
+                        action = "delete";
+                        return showCupertinoDialog<bool>(
+                          context: context,
+                          builder: (context) => CupertinoAlertDialog(
+                            content: Text("Are you sure you want to $action?"),
+                            actions: <Widget>[
+                              CupertinoDialogAction(
+                                child: Text("Ok"),
+                                onPressed: () {
+                                  setState(() {
+                                    final db = DatabaseHelper.instance;
+                                    db.deletedata(notelist[index].id);
+                                    notelist.removeAt(index);
+                                  });
+
+                                  Navigator.of(context).pop(true);
+                                },
+                              ),
+                              CupertinoDialogAction(
+                                child: Text('Cancel'),
+                                onPressed: () {
+                                  // Dismiss the dialog but don't
+                                  // dismiss the swiped item
+                                  return Navigator.of(context).pop(false);
+                                },
+                              )
+                            ],
+                          ),
+                        );
+
                         // In case the user dismisses
                       },
                       onDismissed: (direction) {
