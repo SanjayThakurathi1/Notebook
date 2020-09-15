@@ -2,12 +2,40 @@
 
 _A new Flutter project with darkmode 
 
-## _Getting Started
+# Use of Material Design and Some Cupertino Design
+
+---
+
+ **Use sqflite for database,
+Use of FutureBuilder,Listview.builder,Listtile,card,datepicker
+Use Dissimissible widget for delete operation
+
+# Use Provider for StateManagement
+
+
+---
+
+
+ <img src ="/assets/app%20Screenshot/1.jpg" width=330 height=650>
  
-1.**Use sqflite for database**
-2.**Use of FutureBuilder**
-3.**Use Dissimissible widget for delete operation
+ 
+ ***
+ <img src ="/assets/app%20Screenshot/2.jpg" width=330 height=650>
+ 
+ 
+ ***
+ 
+ <img src ="/assets/app%20Screenshot/3.jpg" width=330 height=650>
+ ***
+ 
+ 
+ <img src ="/assets/app%20Screenshot/4.jpg" width=330 height=650>
+ ****
+ 
+ 
 
-
+<img src ="/assets/app%20Screenshot/5.jpg" width=330 height=650>
+---
+ 
  
  
